@@ -1,0 +1,30 @@
+name: sfcp-submissions
+env:
+  SERVICE: sfcp-submissions
+  ENV: production
+  REGISTRY: registry.digitalocean.com/sfcp-submissions
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: DigitalOcean doctl Install
+        uses: digitalocean/action-doctl@v2.1.0
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      - name: DigitalOcean Registry Login
+        run: doctl registry login
+      - name: Docker Build
+        uses: docker/build-push-action@v2.2.1
+        with:
+          context: .
+          build-args: node_env=${{ env.ENV }}
+          tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.GITHUB_SHA }}
+          load: true
+      - name: Docker Push
+        run: docker push ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.GITHUB_SHA }}
