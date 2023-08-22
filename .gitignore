@@ -26,3 +26,4 @@ dist-ssr
 # Custom
 /dev
 /web/uploads
+docker-compose.yml
