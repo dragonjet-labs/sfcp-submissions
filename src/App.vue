@@ -27,7 +27,7 @@
     </div>
 
     <!-- SUCCESS -->
-    <v-alert v-if="true || espUrl && branchname" title="Success!" type="success" style="text-align:left;" variant="tonal">
+    <v-alert v-if="espUrl && branchname" title="Success!" type="success" style="text-align:left;" variant="tonal">
       Thank you for uploading a fix!<br /> 
       Please proceed to describe the nature of your bug and what the fix was, and submit the report at
       <a href="https://www.starfieldpatch.dev/report" class="text-black" target="_blank">
