@@ -4,12 +4,6 @@
 <template>
   <v-sheet width="600" class="mx-auto">
     <v-form fast-fail @submit.prevent="submit" v-if="!submitting">
-      <v-text-field
-        :rules="[rules.required]"
-        v-model="branchname"
-        label="Branch Name">
-      </v-text-field>
-
       <v-file-input
         id="espFile"
         :rules="[rules.required]"
@@ -33,7 +27,6 @@ import axios from 'axios';
 
 export default {
   data: () => ({
-    branchname: '',
     message: '',
     espFile: null,
     submitting: false,
@@ -46,15 +39,17 @@ export default {
       this.submitting = true;
       let formData = new FormData();
       const fileInput = document.querySelector('#espFile');
-      formData.append('branchname', this.branchname);
       formData.append('message', this.message);
       formData.append('espFile', fileInput.files[0]);
-      const res = axios.post('https://lionfish-app-n7xsi.ondigitalocean.app/submit', formData, {
+      const res = axios.post('/submit', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       console.log('res', res);
+      if (res && res.data && res.redirect) {
+        window.location.href = res.redirect;
+      }
     },
   },
 }
