@@ -7,11 +7,11 @@ const { Octokit } = require("octokit")
 
 const app = express()
 app.use(cors())
-const port = 3000
+const port = 8080
 const upload = multer({ dest: 'uploads/' })
 
 // DigitalOcean
-const { DO_SPACES_KEY, DO_SPACES_SECRET } = process.env;
+const { DO_SPACES_KEY, DO_SPACES_SECRET, GITHUB_TOKEN } = process.env;
 const spacesEndpoint = new AWS.Endpoint('sfo3.digitaloceanspaces.com');
 const s3 = new AWS.S3({
   endpoint: spacesEndpoint,
@@ -57,6 +57,14 @@ app.post('/submit', upload.single('espFile'), async (req, res) => {
     }
   })
 })
+
+// Serve static frontend
+app.use('/', express.static('dist'))
+
+// // Root
+// app.get('/',(req, res) => {
+//   res.json({ ok: 1 })
+// })
 
 // Web app listener
 app.listen(port, () => {
