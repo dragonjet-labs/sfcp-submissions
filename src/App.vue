@@ -1,11 +1,4 @@
 <script setup>
-import { ref, watch } from 'vue'
-
-const branchname = ref(0);
-watch(branchname, (newX) => {
-  const stripped = newX.replace(/[^a-z0-9]/gi, '');
-  branchname.value = stripped;
-})
 </script>
 
 <template>
@@ -13,7 +6,6 @@ watch(branchname, (newX) => {
     <v-form fast-fail @submit.prevent="submit" v-if="!submitting">
       <v-text-field
         :rules="[rules.required]"
-        pattern="[a-zA-Z0-9]+"
         v-model="branchname"
         label="Branch Name">
       </v-text-field>
@@ -54,8 +46,10 @@ export default {
       this.submitting = true;
       let formData = new FormData();
       const fileInput = document.querySelector('#espFile');
-      formData.append('pic', fileInput.files[0]);
-      const res = axios.post('https://jetri.co', formData, {
+      formData.append('branchname', this.branchname);
+      formData.append('message', this.message);
+      formData.append('espFile', fileInput.files[0]);
+      const res = axios.post('https://lionfish-app-n7xsi.ondigitalocean.app/submit', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
