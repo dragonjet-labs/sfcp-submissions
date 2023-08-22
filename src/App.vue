@@ -40,8 +40,9 @@
         <li>Branch Name: <span class="text-black">{{ branchname }}</span></li>
       </ul>
       <br />
-      If you'd like to see the status of your plugin file, 
-      <a href="https://github.com/dragonjet-labs/sfcp-flows/actions" class="text-black" target="_blank">you may check here</a>.
+      If you'd like, you can <a href="https://github.com/dragonjet-labs/sfcp-flows/actions" class="text-black" target="_blank">see the status of your plugin file</a>.
+      <br /><br />
+      If you'd like, you can <a :href="`https://github.com/dragonjet-labs/sfcp-flows/tree/${branchname}/Data`" class="text-black" target="_blank">see if your branch has been created</a>. This usually takes a few minutes after you have submitted.
     </v-alert>
 
     <!-- ERROR -->
