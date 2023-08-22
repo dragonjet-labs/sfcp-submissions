@@ -3,11 +3,12 @@
 
 <template>
   <v-sheet width="600" class="mx-auto">
-    <v-form fast-fail @submit.prevent="submit" v-if="!submitting">
+    <!-- SUBMISSION -->
+    <v-form fast-fail @submit.prevent="submit" v-if="!submitting && !espUrl">
       <v-file-input
         id="espFile"
         :rules="[rules.required]"
-        accept=".esm,.esp,.esl,.png"
+        accept=".esm,.esp,.esl"
         label="ESM/ESP/ESL File">
       </v-file-input>
 
@@ -19,6 +20,27 @@
 
       <v-btn type="submit" block class="mt-2">Submit</v-btn>
     </v-form>
+
+    <!-- LOADING -->
+    <div v-if="this.submitting" style="text-align:center;">
+      <v-progress-circular indeterminate></v-progress-circular>
+    </div>
+
+    <!-- SUCCESS -->
+    <v-alert v-if="espUrl && branchname" title="Success!" type="success" style="text-align:left;" variant="tonal">
+      Thank you for uploading a fix!<br /> 
+      Please proceed to describe the nature of your bug and what the fix was, and submit the report at
+      <a href="https://www.starfieldpatch.dev/report" class="text-black">https://www.starfieldpatch.dev/report</a>.
+      <br /><br />
+      Please include the following information:
+      <ul>
+        <li>ESP URL: <span class="text-black">{{ espUrl }}</span></li>
+        <li>Branch Name: <span class="text-black">{{ branchname }}</span></li>
+      </ul>
+    </v-alert>
+
+    <!-- ERROR -->
+    <v-alert v-if="errorMessage" title="Error" :text="errorMessage" type="error"></v-alert>
   </v-sheet>
 </template>
 
@@ -30,6 +52,9 @@ export default {
     message: '',
     espFile: null,
     submitting: false,
+    espUrl: null,
+    branchname: null,
+    errorMessage: '',
     rules: {
       required: value => !!value || 'Field is required',
     },
@@ -41,16 +66,18 @@ export default {
       const fileInput = document.querySelector('#espFile');
       formData.append('message', this.message);
       formData.append('espFile', fileInput.files[0]);
-      const res = await axios.post('/submit', formData, {
+      axios.post('/submit', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
+      }).then((res) => {
+        this.submitting = false;
+        this.espUrl = res.data.espUrl;
+        this.branchname = res.data.branchname;
+      }).catch((err) => {
+        this.submitting = false;
+        this.errorMessage = err.message;
       });
-      if (res && res.data && res.data.redirect) {
-        window.location.href = res.data.redirect;
-      } else {
-        window.location.reload();
-      }
     },
   },
 }
