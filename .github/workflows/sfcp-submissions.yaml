@@ -24,7 +24,7 @@ jobs:
         with:
           context: .
           build-args: node_env=${{ env.ENV }}
-          tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ GITHUB_SHA }}
+          tags: ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.ENV }}
           load: true
       - name: Docker Push
-        run: docker push ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ GITHUB_SHA }}
+        run: docker push ${{ env.REGISTRY }}/${{ env.SERVICE }}:${{ env.ENV }}
