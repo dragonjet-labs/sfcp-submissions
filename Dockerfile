@@ -14,4 +14,4 @@ COPY web/package*.json ./
 RUN npm install
 COPY web /app
 # COPY --from=build-stage /app/dist /app/dist
-RUN node .
+ENTRYPOINT node .
