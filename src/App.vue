@@ -27,16 +27,21 @@
     </div>
 
     <!-- SUCCESS -->
-    <v-alert v-if="espUrl && branchname" title="Success!" type="success" style="text-align:left;" variant="tonal">
+    <v-alert v-if="true || espUrl && branchname" title="Success!" type="success" style="text-align:left;" variant="tonal">
       Thank you for uploading a fix!<br /> 
       Please proceed to describe the nature of your bug and what the fix was, and submit the report at
-      <a href="https://www.starfieldpatch.dev/report" class="text-black">https://www.starfieldpatch.dev/report</a>.
+      <a href="https://www.starfieldpatch.dev/report" class="text-black" target="_blank">
+        https://www.starfieldpatch.dev/report
+      </a>.
       <br /><br />
       Please include the following information:
       <ul>
         <li>ESP URL: <span class="text-black">{{ espUrl }}</span></li>
         <li>Branch Name: <span class="text-black">{{ branchname }}</span></li>
       </ul>
+      <br />
+      If you'd like to see the status of your plugin file, 
+      <a href="https://github.com/dragonjet-labs/sfcp-flows/actions" class="text-black" target="_blank">you may check here</a>.
     </v-alert>
 
     <!-- ERROR -->
