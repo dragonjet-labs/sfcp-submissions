@@ -27,16 +27,20 @@ const octokit = new Octokit({ auth: GITHUB_TOKEN })
 app.post('/submit', upload.single('espFile'), async (req, res) => {
   const { originalname, path: filePath } = req.file;
 
-  const basename = path.basename(originalname, path.extname(originalname)).replace(/[^a-zA-Z0-9]/gi, '');
-  const branchname = `esp/${basename}-${Math.floor(new Date().getTime()/1000)}`
-  const espUrl = `https://sfcp-submissions.sfo3.digitaloceanspaces.com/${originalname}`
+  const unix = Math.floor(new Date().getTime() / 1000);
+  
+  const extname = path.extname(originalname);
+  const basename = path.basename(originalname, extname).replace(/[^a-zA-Z0-9]/gi, '');
+  const newname = `${basename}-${unix}`;
+  const branchname = `esp/${newname}`
+  const espUrl = `https://sfcp-submissions.sfo3.digitaloceanspaces.com/${newname}${extname}`
 
   // Upload ESP File to DigitalOcean Spaces
   await new Promise((resolve, reject) => {
     let fileStream = fs.createReadStream(filePath)
     s3.putObject({
       Bucket: 'sfcp-submissions',
-      Key: originalname,
+      Key: `${newname}${extname}`,
       CacheControl: `public, max-age=86400`,
       ACL: 'public-read',
       Body: fileStream,
