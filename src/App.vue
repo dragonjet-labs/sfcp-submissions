@@ -41,14 +41,15 @@ export default {
       const fileInput = document.querySelector('#espFile');
       formData.append('message', this.message);
       formData.append('espFile', fileInput.files[0]);
-      const res = axios.post('/submit', formData, {
+      const res = await axios.post('/submit', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('res', res);
-      if (res && res.data && res.redirect) {
-        window.location.href = res.redirect;
+      if (res && res.data && res.data.redirect) {
+        window.location.href = res.data.redirect;
+      } else {
+        window.location.reload();
       }
     },
   },
