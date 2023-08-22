@@ -1,4 +1,5 @@
 const fs = require('fs')
+const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const multer  = require('multer')
@@ -26,8 +27,11 @@ const octokit = new Octokit({ auth: GITHUB_TOKEN })
 app.post('/submit', upload.single('espFile'), async (req, res) => {
   const { originalname, path: filePath } = req.file;
 
+  const basename = path.basename(originalname, path.extname(originalname)).replace(/[^a-zA-Z0-9]/gi, '');
+  const branchname = `esp/${basename}`
+
   // Upload ESP File to DigitalOcean Spaces
-  await new Promise((resolve, reject) => {
+  const upload = await new Promise((resolve, reject) => {
     let fileStream = fs.createReadStream(filePath)
     s3.putObject({
       Bucket: 'sfcp-submissions',
@@ -42,13 +46,13 @@ app.post('/submit', upload.single('espFile'), async (req, res) => {
   });
 
   // Trigger GitHub Actions workflow
-  await octokit.request('POST /repos/dragonjet-labs/sfcp-flows/actions/workflows/spriggit-win/dispatches', {
+  const dispatch = await octokit.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
     owner: 'dragonjet-labs',
     repo: 'sfcp-flows',
-    workflow_id: 'spriggit-win',
+    workflow_id: '66602836',
     ref: 'main',
     inputs: {
-      branchname: req.body.branchname,
+      branchname,
       message: req.body.message,
       espfile: `https://sfcp-submissions.sfo3.digitaloceanspaces.com/${originalname}`,
     },
@@ -56,15 +60,18 @@ app.post('/submit', upload.single('espFile'), async (req, res) => {
       'X-GitHub-Api-Version': '2022-11-28'
     }
   })
+
+  // Response
+  res.json({
+    upload,
+    dispatch,
+    // redirect: `https://github.com/dragonjet-labs/sfcp-flows/tree/${branchname}`,
+    redirect: 'https://github.com/dragonjet-labs/sfcp-flows/actions',
+  })
 })
 
 // Serve static frontend
 app.use('/', express.static('dist'))
-
-// // Root
-// app.get('/',(req, res) => {
-//   res.json({ ok: 1 })
-// })
 
 // Web app listener
 app.listen(port, () => {
